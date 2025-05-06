@@ -9,14 +9,15 @@ import UIKit
 
 class OrderTableViewController: UITableViewController {
 
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        //For Adding and order and bringing the notification from MenuController.swift
+        NotificationCenter.default.addObserver(tableView!, selector: #selector(UITableView.reloadData), name: MenuController.orderUpdatedNotification,object:nil)
+        
+    
     }
 
     // MARK: - Table view data source
@@ -28,18 +29,30 @@ class OrderTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return MenuController.shared.order.menuItems.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        //Using the Reusable Identifier MenuItem set in Main.Storyboard cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Order", for: indexPath)
+        //using the function created
+        configure(cell, forItemAt: indexPath)
         return cell
     }
-    */
+    
+    //Function to let the content change depending on the JSON file names and prices
+    func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath){
+        let menuItem = MenuController.shared.order.menuItems[indexPath.row]
+        
+        var content = cell.defaultContentConfiguration()
+        content.text = menuItem.name
+        //The other .currency is not working :/
+        content.secondaryText = String(format: "$%.2f", menuItem.price)
+        cell.contentConfiguration = content
+    }
+}
+    
 
     /*
     // Override to support conditional editing of the table view.
@@ -57,7 +70,7 @@ class OrderTableViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
     */
 
@@ -86,4 +99,4 @@ class OrderTableViewController: UITableViewController {
     }
     */
 
-}
+

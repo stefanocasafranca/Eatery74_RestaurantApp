@@ -18,7 +18,9 @@ class MenuController {
         //case imageDataMissing
     }
 
-    //static let orderUpdatedNotification = Notification.Name("MenuController.orderUpdated")
+    //For Adding and order
+
+    static let orderUpdatedNotification = Notification.Name("MenuController.orderUpdated")
     
     //Line added so CategoryTableVC can
     //Properly make the task of Network Request + inheriting the context where it is called
@@ -28,6 +30,17 @@ class MenuController {
 
     
     let baseURL = URL(string: "http://localhost:8080/")!
+    
+    
+
+    //For Adding and order
+    var order = Order() {
+        
+        didSet {
+            NotificationCenter.default.post(name:MenuController.orderUpdatedNotification, object: nil)
+        }
+    }
+    
 
     //Notification on the bag order
    /* var order = Order() {

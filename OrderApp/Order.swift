@@ -10,7 +10,7 @@ import Foundation
 
 //Order model object will contain a simple list of the items the user has added to their "bag".
 
-struct Order: Codable {
+ struct Order: Codable {
     var menuItems: [MenuItem]
     
     init(menuItems: [MenuItem]) {
