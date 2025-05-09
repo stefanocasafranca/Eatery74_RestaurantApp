@@ -37,7 +37,7 @@ class MenuItemDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-      updateUI()
+        updateUI()
     }
     
     //Changing each label to it's corresponding texts from JSON menuItem file

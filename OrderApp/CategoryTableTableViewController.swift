@@ -12,9 +12,9 @@ import UIKit
 @MainActor
 class CategoryTableTableViewController: UITableViewController {
     
-   
-//  MARK: 1.    Initially empty so the table view starts with no rows.
-   
+    
+    //  MARK: 1.    Initially empty so the table view starts with no rows.
+    
     //Instance of the class that works with network code
     //[String]() is shorthand for an empty array of type String.
     var categories = [String]()
@@ -22,10 +22,10 @@ class CategoryTableTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//  MARK: 2. Proper Network (JSON) Request inheriting the context where it is called
+        //  MARK: 2. Proper Network (JSON) Request inheriting the context where it is called
         
         //Calling the "GET call for Categories JSON" (MenuController.swift)
-
+        
         Task.init {
             do {
                 //Access the MenuController file to then access the "shared" static const to then access the "fetchCategories" function
@@ -38,7 +38,7 @@ class CategoryTableTableViewController: UITableViewController {
     }
     
     
-//  MARK: 3. Patterns that will be repeated in other View Controllers
+    //  MARK: 3. Patterns that will be repeated in other View Controllers
     func updateUI(with categories: [String]) {
         self.categories = categories
         self.tableView.reloadData()
@@ -56,7 +56,7 @@ class CategoryTableTableViewController: UITableViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-   
+    
     
     //Cast the sender argument to a UITableViewCell and then you look up its Index Path and use to determine the category that was selected
     @IBSegueAction func showMenu(_ coder: NSCoder, sender: Any?) -> MenuTableViewController? {
@@ -69,7 +69,7 @@ class CategoryTableTableViewController: UITableViewController {
     }
     
     
-//  MARK: 4. Table View Methods used for displaying
+    //  MARK: 4. Table View Methods used for displaying
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         
@@ -85,28 +85,29 @@ class CategoryTableTableViewController: UITableViewController {
     }
     
     
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-         
-         //"reuseIdentifier" --> "Category" (identifier from Main)
-     let cell = tableView.dequeueReusableCell(withIdentifier: "Category", for: indexPath)
-     
-     // Configure the cell...
-         configureCell(cell, forCategoryAt: indexPath)
-         
-     return cell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-     }
-     
+        //"reuseIdentifier" --> "Category" (identifier from Main)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Category", for: indexPath)
+        
+        // Configure the cell...
+        configureCell(cell, forCategoryAt: indexPath)
+        
+        return cell
+        
+    }
+    
     //Added Function
     // Uses modern cell configuration with defaultContentConfiguration to safely set the category label
     
     func configureCell(_ cell: UITableViewCell, forCategoryAt indexPath: IndexPath) {
         let category = categories[indexPath.row]
+        
         var content = cell.defaultContentConfiguration()
         content.text = category.capitalized
         cell.contentConfiguration = content
     }
-    
+}
     
     
     
@@ -156,4 +157,4 @@ class CategoryTableTableViewController: UITableViewController {
      }
      */
     
-}
+
