@@ -11,12 +11,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    // This is a reference to the second tab bar item (Order tab).
+    // It's used to display a badge with the current number of menu items in the order.
+    var orderTabBarItem: UITabBarItem!
+
+    @objc func updateOrderBadge() {
+        /*Before: orderTabBarItem.badgeValue = String(MenuController.shared.order.menuItems.count) */
+        switch MenuController.shared.order.menuItems.count {
+            case 0:
+            orderTabBarItem.badgeValue = nil
+        case let count: orderTabBarItem.badgeValue = String(count)
+        }
+    }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        
+        // Subscribe to order update notifications to refresh the badge when items are added/removed.
+        NotificationCenter.default.addObserver(self, selector: #selector(updateOrderBadge), name: MenuController.orderUpdatedNotification, object: nil)
+
+        // Grab the Order tab (second tab) from the Tab Bar Controller to update its badge later.
+        orderTabBarItem = (window?.rootViewController as? UITabBarController)?.viewControllers?[1].tabBarItem
+
+        
+        // Initialize OrderHistory to load any saved orders
+        _ = OrderHistory.shared
+        
+        
         guard let _ = (scene as? UIWindowScene) else { return }
+        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

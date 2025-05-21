@@ -10,10 +10,16 @@ import UIKit
 @MainActor
 class MenuTableViewController: UITableViewController {
     
+    
+    
     let category: String
     //Create an instance of the class in MenuController.swift
     let menuController = MenuController()
+    // MARK: For image load task we create a dictionary to store the keys and values.After doing this in Override didEndDisplaying:forRowAt we need to cancel the appropiate tasks
+    var imageLoadTasks: [IndexPath: Task<Void, Never>] = [:]
     
+  
+
     
     //  MARK: 1.    Initially empty so the table view starts with no rows.
     
@@ -45,6 +51,17 @@ class MenuTableViewController: UITableViewController {
                 displayError(error, title: "Failed to fetch Menu Items for \(self.category)")
             }
         }
+        
+    }
+    
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        // Cancel image fetching tasks that are no longer needed
+        imageLoadTasks.forEach { _, task in
+            task.cancel()
+        }
     }
     
     
@@ -67,11 +84,6 @@ class MenuTableViewController: UITableViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    
-    
-    
-    
-    
 //  MARK: 5. Table View Methods and func used for displaying
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -93,14 +105,72 @@ class MenuTableViewController: UITableViewController {
         return cell
     }
     
+    
+    
+    /*BEFORE THE IMAGES RETRIEVAL
     //Function to let the content change depending on the JSON file names and prices
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath){
+        
+        //For the images and using the MenuItemCell...
+        guard let cell = cell as? MenuItemCell else { return }
+        
+    
+        //This stays like before
         let menuItem = menuItems[indexPath.row]
         
+        
+        //This goes away
         var content = cell.defaultContentConfiguration()
         content.text = menuItem.name
         content.secondaryText = menuItem.price.formatted(.currency(code: "usd"))
+        //Adding a placeholder image
+        content.image = UIImage(systemName: "photo.on.rectangle.angled.fill")
         cell.contentConfiguration = content
+        
+        //Task for returning an image before
+        /*
+        Task {
+            if let image = try? await MenuController.shared.fetchImage(from: menuItem.imageURL) {
+                // Image was returned
+            }
+        }*/
+        //Task for returning an image complete and final
+
+        Task {
+            if let image = try? await MenuController.shared.fetchImage(from: menuItem.imageURL) {
+                if let currentIndexPath = self.tableView.indexPath(for: cell),
+                   currentIndexPath == indexPath {
+                    var content = cell.defaultContentConfiguration()
+                    content.text = menuItem.name
+                    content.secondaryText = menuItem.price.formatted(.currency(code: "usd"))
+                    content.image = image
+                    cell.contentConfiguration = content
+                }
+            }
+        }
+        
+        
+    }*/
+    
+    
+    func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? MenuItemCell else { return }
+        
+        let menuItem = menuItems[indexPath.row]
+        
+        cell.itemName = menuItem.name
+        cell.price = menuItem.price
+        cell.image = nil
+
+        imageLoadTasks[indexPath] = Task.init {
+            if let image = try? await MenuController.shared.fetchImage(from: menuItem.imageURL) {
+                if let currentIndexPath = self.tableView.indexPath(for: cell),
+                    currentIndexPath == indexPath {
+                    cell.image = image
+                }
+            }
+            imageLoadTasks[indexPath] = nil
+        }
     }
     
     //Action coming from the Segue that goes from this screen to the UIViewController (Detail)
@@ -114,6 +184,12 @@ class MenuTableViewController: UITableViewController {
         return MenuItemDetailViewController(coder: coder, menuItem: menuItem)
     }
     
+    // MARK: - Table view delegate
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // cancel the image fetching task if we no longer need it
+        imageLoadTasks[indexPath]?.cancel()
+    }
     
     
 }

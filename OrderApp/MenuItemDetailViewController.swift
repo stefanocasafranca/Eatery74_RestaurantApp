@@ -45,6 +45,14 @@ class MenuItemDetailViewController: UIViewController {
         nameLabel.text = menuItem.name
         priceLabel.text = menuItem.price.formatted(.currency(code: "usd"))
         detailTextLabel.text = menuItem.detailText
+        
+        //Last task to update the image
+        Task.init {
+            if let image = try? await
+                MenuController.shared.fetchImage(from: menuItem.imageURL) {
+                imageView.image = image
+            }
+        }
     }
     
     
@@ -65,6 +73,7 @@ class MenuItemDetailViewController: UIViewController {
         
         //Appending the Order to the button
         MenuController.shared.order.menuItems.append(menuItem)
+        
     }
     
     

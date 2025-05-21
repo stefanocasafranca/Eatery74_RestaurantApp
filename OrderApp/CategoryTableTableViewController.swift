@@ -39,7 +39,7 @@ class CategoryTableTableViewController: UITableViewController {
     
     
     //  MARK: 3. Patterns that will be repeated in other View Controllers
-    func updateUI(with categories: [String]) {
+     func updateUI(with categories: [String]) {
         self.categories = categories
         self.tableView.reloadData()
     }
@@ -107,6 +107,7 @@ class CategoryTableTableViewController: UITableViewController {
         content.text = category.capitalized
         cell.contentConfiguration = content
     }
+   
 }
     
     
@@ -157,4 +158,3 @@ class CategoryTableTableViewController: UITableViewController {
      }
      */
     
-

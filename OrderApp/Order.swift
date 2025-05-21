@@ -13,7 +13,13 @@ import Foundation
  struct Order: Codable {
     var menuItems: [MenuItem]
     
-    init(menuItems: [MenuItem]) {
+     
+//Before: Causing Problems in MenuController.swift 
+     /* init (menuItems: [MenuItem]) {
+      self.menuItems = menuItems
+  }*/
+     
+    init(menuItems: [MenuItem] = []) {
         self.menuItems = menuItems
     }
 }
